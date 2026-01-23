@@ -1,0 +1,22 @@
+# GENERATED FILE - DO NOT EDIT!
+#
+# To update this file, run:
+#   bazel run //meta:gazelle_python_manifest.update
+
+---
+manifest:
+  modules_mapping:
+    aiohappyeyeballs: aiohappyeyeballs
+    aiohttp: aiohttp
+    aiosignal: aiosignal
+    attr: attrs
+    attrs: attrs
+    frozenlist: frozenlist
+    google.protobuf: protobuf
+    idna: idna
+    multidict: multidict
+    propcache: propcache
+    yarl: yarl
+  pip_repository:
+    name: pypi
+integrity: 2b3ad311e770d2e1246e2120a6d0aab4013ff48cee67d5d3073f3f877dd5e1f3

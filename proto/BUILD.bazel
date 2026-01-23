@@ -1,0 +1,13 @@
+load("@protobuf//bazel:proto_library.bzl", "proto_library")
+load("@rules_proto_grpc_python//:defs.bzl", "python_grpc_compile")
+
+proto_library(
+    name = "empty_proto",
+    srcs = ["empty.proto"],
+)
+
+python_grpc_compile(
+    name = "empty_python_grpc",
+    protos = [":empty_proto"],
+    visibility = ["//visibility:public"],
+)

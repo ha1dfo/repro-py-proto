@@ -1,0 +1,8 @@
+load("@gazelle//:def.bzl", "gazelle")
+
+# gazelle:map_kind py_library py_library @aspect_rules_py//py:defs.bzl
+# gazelle:map_kind py_binary py_binary @aspect_rules_py//py:defs.bzl
+# gazelle:map_kind py_test py_test @aspect_rules_py//py:defs.bzl
+# gazelle:prefix github.com/GM-InnerSource/garage
+# gazelle:go_grpc_compilers	@rules_go//proto:go_grpc_v2, @rules_go//proto:go_proto
+gazelle(name = "gazelle")

@@ -1,0 +1,2 @@
+aiohttp>=3.12.3
+protobuf>=7.34.0rc1
