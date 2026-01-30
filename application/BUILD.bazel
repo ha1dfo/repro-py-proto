@@ -1,0 +1,62 @@
+load("@aspect_rules_py//py:defs.bzl", "py_binary", "py_library", "py_venv")
+load("@pip//:requirements.bzl", "requirement")
+
+py_library(
+    name = "apple_lib",
+    srcs = [
+        "app_lib.py",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto:empty_pb2",
+    ],
+)
+py_binary(
+    name = "apple",
+    srcs = [
+        "main.py",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":apple_lib",
+        requirement("protobuf"),
+    ],
+)
+
+py_venv(
+    name = "apple_venv",
+    deps = [
+        "//proto:empty_pb2",
+        ":apple",
+    ],
+)
+
+
+py_library(
+    name = "orange_lib",
+    srcs = [
+        "app_lib.py",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//proto:empty_pb2",
+    ],
+)
+py_binary(
+    name = "orange",
+    srcs = [
+        "main.py",
+    ],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":apple_lib",
+    ],
+)
+
+py_venv(
+    name = "orange_venv",
+    deps = [
+        "//proto:empty_pb2",
+        ":orange",
+    ],
+)
