@@ -1,5 +1,4 @@
 load("@aspect_rules_py//py:defs.bzl", "py_binary", "py_library", "py_venv")
-load("@pip//:requirements.bzl", "requirement")
 
 py_library(
     name = "apple_lib",
@@ -19,7 +18,7 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = [
         ":apple_lib",
-        requirement("protobuf"),
+        "@pypi//protobuf",
     ],
 )
 
