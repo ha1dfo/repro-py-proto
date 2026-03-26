@@ -18,7 +18,7 @@ bazel_dep(name = "rules_proto_grpc_python", version = "5.8.0")
 ### Python #######################################################################
 bazel_dep(name = "rules_python", version = "1.8.2")
 bazel_dep(name = "rules_python_gazelle_plugin", version = "1.8.2")
-bazel_dep(name = "aspect_rules_py", version = "1.8.4")
+bazel_dep(name = "aspect_rules_py", version = "1.10.0")
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(
@@ -26,17 +26,20 @@ python.toolchain(
 )
 use_repo(python, "python_3_13", "python_versions", "pythons_hub")
 
-pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
-pip.parse(
-    # hub_name = "pypi",
-    hub_name = "pip",
-    python_version = "3.13",
-    requirements_by_platform = {
-        "//meta:requirements_lock.txt": "linux_*,osx_*",
-        # TODO: This is untested. Uncomment it once verified that everything works
-        # "//:requirements_windows.txt": "windows_x86_64,windows_aarch64",
-    },
+uv = use_extension("@aspect_rules_py//uv/unstable:extension.bzl", "uv")
+uv.declare_hub(
+    hub_name = "pypi",      # Or whatever you wish
+)
+uv.project(
+    hub_name = "pypi",      # Must be a declared hub
+    pyproject = "//meta:pyproject.toml",
+    lock = "//meta:uv.lock",
+)
+uv.override_package(
+    name = "protobuf",
+    lock = "//meta:uv.lock",
+    target = "@protobuf//:well_known_types_py_pb2",
 )
 
-#use_repo(pip, "pypi")
-use_repo(pip, "pip")
+
+use_repo(uv, "pypi")
