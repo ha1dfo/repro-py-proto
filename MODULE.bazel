@@ -7,6 +7,9 @@ bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
 bazel_dep(name = "aspect_bazel_lib", version = "2.21.2")
 
+### CC ##########################################################################
+bazel_dep(name = "rules_foreign_cc", version = "0.15.1")
+
 ### Protobuf ####################################################################
 bazel_dep(name = "protobuf", version = "33.4")
 
