@@ -1,5 +1,6 @@
-load("@aspect_rules_py//py:defs.bzl", "py_binary", "py_library", "py_venv")
-load("@pip//:requirements.bzl", "requirement")
+load("@aspect_rules_py//py:defs.bzl", "py_binary", "py_library", "py_venv",  "py_image_layer")
+load("@rules_oci//oci:defs.bzl", "oci_image", "oci_load")
+
 
 py_library(
     name = "apple_lib",
@@ -19,14 +20,14 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = [
         ":apple_lib",
-        requirement("protobuf"),
+        "@pypi//protobuf",
+        "@pypi//click",
     ],
 )
 
 py_venv(
     name = "apple_venv",
     deps = [
-        "//proto:empty_pb2",
         ":apple",
     ],
 )
@@ -50,6 +51,7 @@ py_binary(
     visibility = ["//visibility:public"],
     deps = [
         ":apple_lib",
+        "@pypi//click",
     ],
 )
 
@@ -58,5 +60,31 @@ py_venv(
     deps = [
         "//proto:empty_pb2",
         ":orange",
+    ],
+)
+
+
+py_image_layer(
+    name = "app_layer",
+    binary = ":apple",
+)
+
+oci_image(
+    name = "docker_image",
+    # We need bash and python for this.
+    base = "@ubuntu",
+    entrypoint = ["/application/apple"],
+    exposed_ports = [],
+    tars = [":app_layer"],
+)
+
+oci_load(
+    name = "docker_load",
+    image = ":docker_image",
+    repo_tags = [
+        "apple:local",
+    ],
+    tags = [
+        "artifact",
     ],
 )

@@ -2,12 +2,12 @@ module(name = "repro")
 
 ### General ######################################################################
 bazel_dep(name = "gazelle", version = "0.47.0")
-bazel_dep(name = "rules_pkg", version = "1.1.0")
+bazel_dep(name = "rules_pkg", version = "1.2.0")
 bazel_dep(name = "platforms", version = "1.0.0")
 bazel_dep(name = "bazel_skylib", version = "1.8.2")
 bazel_dep(name = "aspect_bazel_lib", version = "2.21.2")
 
-### CC ##########################################################################
+### CC? ###
 bazel_dep(name = "rules_foreign_cc", version = "0.15.1")
 
 ### Protobuf ####################################################################
@@ -17,8 +17,7 @@ bazel_dep(name = "rules_proto_grpc_python", version = "5.8.0")
 
 ### Python #######################################################################
 bazel_dep(name = "rules_python", version = "1.8.2")
-bazel_dep(name = "rules_python_gazelle_plugin", version = "1.8.2")
-bazel_dep(name = "aspect_rules_py", version = "1.8.4")
+bazel_dep(name = "aspect_rules_py", version = "1.10.0")
 
 python = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python.toolchain(
@@ -26,17 +25,43 @@ python.toolchain(
 )
 use_repo(python, "python_3_13", "python_versions", "pythons_hub")
 
-pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
-pip.parse(
-    # hub_name = "pypi",
-    hub_name = "pip",
-    python_version = "3.13",
-    requirements_by_platform = {
-        "//meta:requirements_lock.txt": "linux_*,osx_*",
-        # TODO: This is untested. Uncomment it once verified that everything works
-        # "//:requirements_windows.txt": "windows_x86_64,windows_aarch64",
-    },
+uv = use_extension("@aspect_rules_py//uv/unstable:extension.bzl", "uv")
+uv.declare_hub(
+    hub_name = "pypi",      # Or whatever you wish
+)
+uv.project(
+    hub_name = "pypi",      # Must be a declared hub
+    pyproject = "//meta:pyproject.toml",
+    lock = "//meta:uv.lock",
+)
+uv.override_package(
+    name = "protobuf",
+    lock = "//meta:uv.lock",
+    target = "@protobuf//:well_known_types_py_pb2",
 )
 
-#use_repo(pip, "pypi")
-use_repo(pip, "pip")
+
+use_repo(uv, "pypi")
+
+
+### OCI ##########################################################################
+bazel_dep(name = "rules_oci", version = "2.3.0")
+bazel_dep(name = "rules_distroless", version = "0.6.2")
+
+oci = use_extension("@rules_oci//oci:extensions.bzl", "oci")
+oci.pull(
+    name = "ubuntu",
+    digest = "sha256:80dd3c3b9c6cecb9f1667e9290b3bc61b78c2678c02cbdae5f0fea92cc6734ab",
+    image = "ubuntu",
+    platforms = [
+        "linux/arm64/v8",
+        "linux/amd64",
+    ],
+    tag = "latest",
+)
+use_repo(
+    oci,
+    "ubuntu"
+    "ubuntu_linux_amd64",
+    "ubuntu_linux_arm64_v8",
+)
